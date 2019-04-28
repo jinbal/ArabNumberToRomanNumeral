@@ -4,61 +4,67 @@ object RomanNumeralConverters {
 
   case class ConversionResult(remaining: Int, output: String = "")
 
-  sealed abstract class NumeralSymbol(val symbol: String,
-                                      val numericValue: Int) {
+  sealed abstract class Numeral(symbol: String, numericValue: Int) {
 
-    def append(currentResult: ConversionResult) = {
-      val remainder = currentResult.remaining % numericValue
-      val modulus = (currentResult.remaining - remainder) / numericValue
-      currentResult.copy(remainder, currentResult.output + List.fill(modulus)(symbol).mkString)
+    def append(conversionResult: ConversionResult): ConversionResult = {
+      val remainder = conversionResult.remaining % numericValue
+      val divisible = conversionResult.remaining - remainder
+      val symbolRepeat = divisible / numericValue
+      val newOutput = List.fill(symbolRepeat)(symbol).mkString
+      conversionResult.copy(remaining = remainder, output = conversionResult.output + newOutput)
     }
+
   }
 
-  case object One extends NumeralSymbol("I", 1)
 
-  case object Four extends NumeralSymbol("IV", 4)
+  case object One extends Numeral(symbol = "I", 1)
 
-  case object Five extends NumeralSymbol("V", 5)
+  case object Four extends Numeral(symbol = "IV", 4)
 
-  case object Nine extends NumeralSymbol("IX", 9)
+  case object Five extends Numeral(symbol = "V", 5)
 
-  case object Ten extends NumeralSymbol("X", 10)
+  case object Nine extends Numeral(symbol = "IX", 9)
 
-  case object Forty extends NumeralSymbol("XL", 40)
+  case object Ten extends Numeral(symbol = "X", 10)
 
-  case object Fifty extends NumeralSymbol("L", 50)
+  case object Forty extends Numeral(symbol = "XL", 40)
 
-  case object Ninety extends NumeralSymbol("XC", 90)
+  case object Fifty extends Numeral(symbol = "L", 50)
 
-  case object Hundred extends NumeralSymbol("C", 100)
+  case object Ninety extends Numeral(symbol = "XC", 90)
 
-  case object FourHundred extends NumeralSymbol("CD", 400)
+  case object Hundred extends Numeral(symbol = "C", 100)
 
-  case object NineHundred extends NumeralSymbol("CM", 900)
+  case object FourHundred extends Numeral(symbol = "CD", 400)
 
-  case object Thousand extends NumeralSymbol("M", 1000)
+  case object FiveHundred extends Numeral(symbol = "D", 500)
 
+  case object NineHundred extends Numeral(symbol = "CM", 900)
 
-  val RomanNumeralParsers = List(
-                                 Thousand,
-                                 NineHundred,
-                                 FourHundred,
-                                 Hundred,
-                                 Ninety,
-                                 Fifty,
-                                 Forty,
-                                 Ten,
-                                 Nine,
-                                 Five,
-                                 Four,
-                                 One
-                               )
+  case object Thousand extends Numeral(symbol = "M", 1000)
+
+  val AllNumerals = List(
+                          Thousand,
+                          NineHundred,
+                          FiveHundred,
+                          FourHundred,
+                          Hundred,
+                          Ninety,
+                          Fifty,
+                          Forty,
+                          Ten,
+                          Nine,
+                          Five,
+                          Four,
+                          One
+                        )
+
 
   def convert(numericValue: Int): ConversionResult = {
-    RomanNumeralParsers
-    .foldLeft(ConversionResult(numericValue)) { case (conversionResult, numeral) =>
-      numeral.append(conversionResult)
+    val intialResult = ConversionResult(numericValue)
 
+    AllNumerals.foldLeft(intialResult) { case (currentResult, numeral) =>
+      numeral.append(currentResult)
     }
   }
 }

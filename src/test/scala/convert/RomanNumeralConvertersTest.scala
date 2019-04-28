@@ -14,12 +14,12 @@ class RomanNumeralConvertersTest extends org.scalatest.FunSuite with Matchers {
   }
 
   test("One should generate the correct output") {
-    val initialResult = ConversionResult(1)
+    val initialResult = ConversionResult(2)
 
     val convertionResult: ConversionResult = One.append(initialResult)
 
     convertionResult.remaining shouldBe 0
-    convertionResult.output shouldBe "I"
+    convertionResult.output shouldBe "II"
   }
 
   test("Four should generate the correct output") {
